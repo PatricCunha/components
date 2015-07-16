@@ -415,8 +415,8 @@ function connectToKey(startNode, endIndex) {
 	//DrawLine
 	var canOffset = getOffset(canvas);
 	ctx.beginPath();
-	ctx.moveTo(startX-canOffset.left, startY-canOffset.top);
-	ctx.lineTo(endX-canOffset.left, endY-canOffset.top);
+	ctx.moveTo(startX-canOffset.left+1, startY-canOffset.top);
+	ctx.lineTo(endX-canOffset.left-1, endY-canOffset.top);
 	ctx.lineWidth = 1;
 	ctx.stroke();
 }

@@ -163,3 +163,15 @@
 .hidden ul {
 	display:none;
 }
+
+h2 {
+	text-align: center;
+}
+
+#c3 h2 {
+	color: #eee;
+}
+
+#c2 h2 {
+	color: #ccc;
+}
