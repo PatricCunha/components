@@ -1,0 +1,52 @@
+<!doctype html>
+<!--  data-ng-csp forces angular to eval all expressions, since chrome apps block eval
+  this reduces performance for angularjs
+-->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>JavaScript HashMap</title>
+    <link rel="stylesheet" href="styles/hashmap.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+ <div id="mainContainer" class="container">
+  <div id="actionbar">
+    <ul>
+      <li><a href="./index.html">Components</a></li>
+      <li><a href="./stresslessexpandingnav.html">Stressless Expanding Header</a></li>
+      <li class="selected"><a href="./jshashmap.html">Javascript HashMap</a></li>
+      <li><a href="#">Item four</a></li>
+      <li><a href="#">Item five</a></li>
+    </ul>
+  </div>
+  <div id="header-buffer" class="header-buffer"></div>
+  <div class="contentContainer">
+    <h1>An HashMap in javascript...for fun!?</h1> 
+    <form class="no-cling-form">
+      <input class ="input" type="text" id="hashInput"></input>
+      <input class="button" type="button" id="inputButton" value="+"></input>
+    </form>
+    <div id="wrapper">
+      <canvas id="canvas"></canvas>
+      <div id="c1" class="hashCol">
+        <ul id="hashNames" class="hashUL">
+        </ul>
+      </div>
+      <div id="c2" class="hashCol">
+        <ul id="hashKeys" class="hashUL">
+        </ul>
+      </div>
+      <div id="c3" class="hashCol"></div>
+    </div>
+  </div>
+  <div>
+    <img src="http://4.bp.blogspot.com/-unPwpp8AJTA/U0e9S0F5ljI/AAAAAAAAAUo/xMnUVRO5fyY/s1600/how+hashmap+works+internally+in+java+.png"/>
+  </div>
+</div>
+<!--<script src="./js/vendor/angular.min.js"></script>-->
+<!--<script src="./js/vendor/angular-route.min.js"></script>-->
+<!--<script src="./js/app.js"></script>-->
+<script src="./scripts/hashmap.js"></script>
+</body>
+</html>
