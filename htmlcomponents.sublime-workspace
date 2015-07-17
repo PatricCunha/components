@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"text",
+				"text-align"
+			],
+			[
 				"start",
 				"startX"
 			],
@@ -102,10 +106,6 @@
 			[
 				"font",
 				"font-size"
-			],
-			[
-				"text",
-				"text-decoration"
 			]
 		]
 	},
@@ -123,15 +123,7 @@
 			"file": "jshashmap.html",
 			"settings":
 			{
-				"buffer_size": 1794,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "duartebot.html",
-			"settings":
-			{
-				"buffer_size": 1714,
+				"buffer_size": 1876,
 				"line_ending": "Windows"
 			}
 		},
@@ -139,28 +131,16 @@
 			"file": "styles/hashmap.css",
 			"settings":
 			{
-				"buffer_size": 3402,
+				"buffer_size": 3525,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "//Globals\nvar textInput;\nvar hashmap;\nvar buttonInput;\nvar canvas = document.getElementById('canvas');\nvar ctx = canvas.getContext(\"2d\");\nvar activeArray = [];\n\n// new HashMap\n\n// HashMap.add\n//HashMap.remove\n//HashMap.find\n\n//hashing function needs to have good distribution\n\n//Load Factor\n//n / k where n is the number of entries and k\n\n//Collision resolution\n//separate chaining\n//needs linked lists\n\nfunction getHashCode(obj, prime) {\n	var mult = (typeof prime === 'undefined') ? 16777619 : prime;\n	var hash = 0;\n	if(obj !== null && typeof obj === 'object') {\n		for (var property in obj) {\n    		if (obj.hasOwnProperty(property)) {\n				hash = hash * mult ^ getHashCode(obj[property]);\n				if(hash == Number.MAX_VALUE)\n					return getHashCode(obj, 31);\n    		}\n		}\n		return hash;\n	}else {\n		var type = typeof obj;\n		return HashMap.prototype.hash(type+obj);\n	}\n}\n\nfunction HashMap(size, loadFactor) {\n	this.size = (typeof size === 'undefined') ? 200 : size;\n	this.loadFactor = (typeof loadFactor === 'undefined') ? 0.75 : loadFactor;\n	this.count = 0;\n	// this.hashTable = [];\n	this.hashTable = new Array(this.size);\n}\n\nHashMap.prototype.resize = function() {\n	var newSize = this.size * 2;\n	var newHashMap = new HashMap(newSize, this.loadFactor);\n	this.hashTable.forEach(function(entry){\n		//'entry' is never empty\n		var current = entry.head;\n		while(current) {\n			console.log(current);\n			newHashMap.insert(current.value);\n			current = current.next;\n		}\n	});\n	this.hashTable = newHashMap.hashTable;\n	this.size = newHashMap.size;\n	this.count = newHashMap.count;\n}\n\nHashMap.prototype.isOverloaded = function() {\n	return (this.size * this.loadFactor) < this.count;\n}\n\nHashMap.prototype.hash = function(key) {\n	var prime = 31, i;\n	var hash = 0;\n	var length =  key.length;\n	for (i=0; i < length; i++) {\n   		hash += (key.charCodeAt(i) * prime) ^ (length-(i+1));\n	}\n	return hash;\n	//Java's hashing function adapted\n	// s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]\n}\n\nHashMap.prototype.indexFor = function(hashed) {\n	var index = hashed % (this.size -1);\n	return index;\n}\n\nHashMap.prototype.insert = function(val) {\n 		// Compute the index using Hash Function\n    	var index = this.indexFor(this.hash(val.key));\n    	if(!this.hashTable[index])\n    		this.hashTable[index] = new LinkedList();\n    	// Insert the element in the linked list at the particular index\n    	this.hashTable[index].push(val);\n    	this.count++;\n    	if(this.isOverloaded())\n    		this.resize();\n}\n\nHashMap.prototype.remove = function(key) {\n	// Compute the index using Hash Function\n    var index = this.indexFor(this.hash(key));\n    	if(!this.hashTable[index])\n    		return;\n    this.hashTable[index].remove(key);\n    this.count--;\n}\n\nHashMap.prototype.find = function(key) {\n    // Compute the index using Hash Function\n    var index = this.indexFor(this.hash(key));\n    if(!this.hashTable[index])\n    	return null;\n    return this.hashTable[index].find(key);\n    // Search the linked list at that particular index\n    // for(var i = 0;i < hashTable[index].size();i++)\n    // {\n    //     if(hashTable[index][i] == s)\n    //     {\n    //         cout << s << \" is found!\" << endl;\n    //         return;\n    //     }\n    // }\n    // cout << s << \" is not found!\" << endl;\n}\n\n//Linked List\n//No you can't remove from this linked list, deal with it\n//We could use js objects and arrays to create this, but that's cheating :)\nfunction LinkedList() {\n	this.head = null;\n	this.length = 0;\n}\n\nLinkedList.prototype.toArray = function() {\n	var current = this.head;\n	var resultArray = [], i=0;\n	while(current) {\n		resultArray[i] = current;\n		i++;\n		current = current.next;\n	}\n	return resultArray;\n}\n\nLinkedList.prototype.push = function(val) {\n	var node = {\n		value: val,\n		next: null\n	};\n	if (!this.head) {\n		this.head = node;\n	} else {\n		var current = this.head;\n		while(current.next) {\n			current = current.next;\n		}\n		current.next = node;\n	}\n	this.length++;\n}\n\nLinkedList.prototype.find = function(key) {\n	var current = this.head;\n	if(!current)\n		return null;\n	//Value is at the head\n	if(current.value.key === key) {\n       return current.value.value;\n    } else {\n    	while(current.next) {\n    		//A node in the middle is the selected one\n    		if(current.value.key === key) {\n    			return current.value.value;\n    		}\n			current = current.next;\n		}\n		//Last node\n    	if(current.value.key === key){\n        	return current.value.value;\n        }\n    } \n    return null;\n}\n\nLinkedList.prototype.remove = function(key) {\n	var current = this.head;\n	if(!current) \n		return;\n	//Value is at the head, just swith the second node to be the head\n	if(current.value.key === key) {\n       this.head = current.next;\n       this.length--;\n    } else {\n    	var previous = current;\n    	while(current.next ) {\n    		//A node in the middle is the selected one\n    		//we have to point the previous node to the currents nextnode\n    		if(current.value.key === key) {\n    			previous.next = current.next;\n    			this.length--;\n    			break;\n    		}\n			current = current.next;\n		}\n		//Last node, we only have to remove a reference to it\n    	if(current.value.key === key){\n    		this.length--;\n        	previous.next = null;\n      	}\n    } \n}\n\n//Key Value particular\nfunction KeyValuePair(key, value) {\n	this.key = key;\n	this.value = value;\n}\nwindow.onload = function() {\n	hashmap = new HashMap(5);\n	addToHashMap(hashmap, \"cube\");\n	addToHashMap(hashmap, \"sphere\");\n	addToHashMap(hashmap, \"pyramid\");\n	textInput = document.getElementById('hashInput');\n	buttonInput = document.getElementById('inputButton');\n 	textInput.addEventListener(\"input\", inputChanged, false);\n 	buttonInput.addEventListener(\"click\", buttonClicked, false);\n}\n\nfunction inputChanged() {\n	var val = textInput.value;\n	// var pair = new KeyValuePair(val, {value:val});\n	var exists = !! (hashmap.find(val));\n	if(exists)\n		buttonInput.value = '-' ;\n	else\n		buttonInput.value = '+' ;\n}\n\nfunction buttonClicked() {\n	var val = buttonInput.value;\n	if(val === '-') {\n		removeFromHashMap(hashmap, textInput.value);\n		textInput.value = '';\n	} else {\n		addToHashMap(hashmap, textInput.value);\n		textInput.value = '';\n	}\n}\n\nfunction removeFromHashMap(map, string) {\n	map.remove(string);\n	// updateLists(map);\n	updatePresentation(map);\n}\n\nfunction addToHashMap(map, string) {\n	map.insert(new KeyValuePair(string, {value:string}));\n	// updateLists(map);\n	updatePresentation(map);\n}\n\n// TODO: don't do entire list\nfunction updateLists(map) {\n	var w = canvas.width = canvas.clientWidth;\n	var h = canvas.height = canvas.clientHeight;\n	ctx = canvas.getContext(\"2d\");\n	var namesNode = document.getElementById('hashNames');\n	var keysNode = document.getElementById('hashKeys');\n	var startX, startY, endX, endY, rect;\n	clearChildren(namesNode);\n	clearChildren(keysNode);\n	var length = map.hashTable.length, i;\n	for(i=0; i<length;i++) {\n		var li = document.createElement('LI');\n		var span = document.createElement('SPAN');\n		if(!map.hashTable[i] || !map.hashTable[i].head) {\n			li.id = 'name-li-'+i;\n			li.innerHTML = '\" \"';\n			namesNode.appendChild(li);\n			rect = getOffset(li);\n			startX = rect.left+rect.width;\n			startY = rect.top + rect.height/2;\n			li = document.createElement('LI');\n			li.id = \"key-li-\"+i;\n			li.innerHTML = i;\n			keysNode.appendChild(li);\n			rect = getOffset(li);\n			endX = rect.left;\n			endY = rect.top + rect.height/2;\n		} else {\n			li.id = 'name-li-'+i;\n			li.innerHTML = '\"' + map.hashTable[i].head.value.key + '\"';\n			if(map.hashTable[i].length > 1) {\n				var ul = document.createElement('UL'), li;\n				li.className = 'hidden';\n				var array = map.hashTable[i].toArray();\n				array.forEach(function(val){\n					if(val.value.key === array[0].value.key){}\n					else {\n						innerLi = document.createElement('LI');\n						innerLi.innerHTML = val.value.key;\n						ul.appendChild(innerLi);\n					}\n				});\n				span.className  += 'number';\n				span.innerHTML =\"+\" + (map.hashTable[i].length - 1);\n				li.appendChild(span);\n				li.appendChild(ul);\n				li.addEventListener(\"mouseover\", showBucket, false);\n				li.addEventListener(\"mouseout\", hideBucket, false);\n			}\n			namesNode.appendChild(li);\n			rect = getOffset(li);\n			startX = rect.left+rect.width;\n			startY = rect.top + rect.height/2;\n			li = document.createElement('LI');\n			li.id = \"key-li-\"+i;\n			li.innerHTML = i;\n			keysNode.appendChild(li);\n			rect = getOffset(li);\n			endX = rect.left;\n			endY = rect.top + rect.height/2;\n		}\n		// console.log(li.offsetLeft);\n		// console.log(getOffset(canvas));\n		var canOffset = getOffset(canvas);\n		// console.log(startX-canOffset.left, startY-canOffset.top, endX-canOffset.left, endY-canOffset.top);\n		ctx.beginPath();\n		ctx.moveTo(startX-canOffset.left, startY-canOffset.top);\n		ctx.lineTo(endX-canOffset.left, endY-canOffset.top);\n		ctx.lineWidth = 1;\n		ctx.stroke();\n	}\n	newNoise(map);\n}\n\n\nfunction updatePresentation(map) {\n	createNameList(map);\n	var w = canvas.width = canvas.clientWidth;\n	var h = canvas.height = canvas.clientHeight;\n	ctx = canvas.getContext(\"2d\");\n	createKeysList(map);\n	createNameList(map);\n}\n\nfunction createNameList(map) {\n	var namesNode = document.getElementById('hashNames');\n	var sortedArray = map.hashTable.sort();\n	var contain = document.getElementById('c3');\n	var li, innerLi, span, i=0;\n	clearChildren(namesNode);\n	sortedArray.forEach(function(val){\n		li = document.createElement('LI');\n		li.id = 'name2-li-'+val.head.value.key;\n		li.innerHTML = val.head.value.key;\n		if(val.length > 1) {\n			var ul = document.createElement('UL');\n			span = document.createElement('SPAN');\n			li.className = 'hidden';\n			var array = val.toArray();\n			array.forEach(function(innerVal){\n				if(innerVal.value.key === array[0].value.key){}\n				else {\n					innerLi = document.createElement('LI');\n					innerLi.innerHTML = innerVal.value.key; \n					ul.appendChild(innerLi);\n				}\n			});\n			span.className  += 'number';\n			span.innerHTML =\"+\" + (val.length - 1);\n			li.appendChild(span);\n			li.appendChild(ul);\n			li.addEventListener(\"mouseover\", showBucket, false);\n			li.addEventListener(\"mouseout\", hideBucket, false);\n		}\n		namesNode.appendChild(li);\n		console.log(map.hashTable.length);\n		// connectToKey(li, i);\n		i++;\n	});\n}\n\n/**\n* Creates the list elements for c2\n* corresponding to the keys(buckets) in the hashtable\n* map: the HashMap\n**/\nfunction createKeysList(map) {\n	var keysNode = document.getElementById('hashKeys'), li;\n	var i, length;\n	length = map.hashTable.length;\n	clearChildren(keysNode);\n	for(i=0; i<length; i++) {\n		li = document.createElement('LI');\n		li.id = 'key-li-'+i;\n		li.innerHTML = i;\n		keysNode.appendChild(li);\n		console.log(document.getElementById('key-li-'+i));\n	}\n}\n/**\n* Draw a line between starting from the element in c1\n* to the corresponding element in c2\n* startNode: the node in c1\n* endIndex: number corresponding to the index/hash of the name\n**/\nfunction connectToKey(startNode, endIndex) {\n	//Get starting position from the node with the string (left / c1)\n	var rect = getOffset(startNode);\n	var startX = rect.left+rect.width;\n	var startY = rect.top + rect.height/2;\n	var endNode = document.getElementById(\"key-li-\" + endIndex);\n	//Get ending position from the node with the key, (on the center / c2)\n	rect = getOffset(endNode);\n	var endX = rect.left;\n	var endY = rect.top + rect.height/2;\n	//DrawLine\n	ctx.beginPath();\n	ctx.moveTo(startX-canOffset.left, startY-canOffset.top);\n	ctx.lineTo(endX-canOffset.left, endY-canOffset.top);\n	ctx.lineWidth = 1;\n	ctx.stroke();\n}\n\n/*\n* Removes all children from the given node\n* node: the node to clear of children\n*/\nfunction clearChildren(node) {\n	while (node.hasChildNodes()) {\n    	node.removeChild(node.lastChild);\n	}\n}\n\n/*\n* Gets the offset of an object acounting for\n* scroll offset\n* el: the object to calculate the offset of\n* return \n*{\n*	left:\"left offset of the element\",\n*	top:\"top offset of the element\",\n*	width:\"width of the element\",\n*	height:\"height of the element\"\n*};\n*/\nfunction getOffset( el ) {\n    var rect = el.getBoundingClientRect();\n    return {\n        left: rect.left + window.pageXOffset,\n        top: rect.top + window.pageYOffset,\n        width: rect.width || el.offsetWidth,\n        height: rect.height || el.offsetHeight\n    };\n}\n\nfunction showBucket(e) {\n	if(e.target.nodeName === 'LI')\n		e.target.className = '';\n}\n\nfunction hideBucket(e) {\n	if(e.target.nodeName === 'LI')\n		e.target.className = 'hidden';\n}\n\n/**names.sort();\n* visually we want the keys to the left sorted\n* the hashes sorted too\n* and finally a list of entries\n**/\n\n",
 			"file": "scripts/hashmap.js",
-			"file_size": 12961,
-			"file_write_time": 130814443864512476,
 			"settings":
 			{
-				"buffer_size": 12488,
+				"buffer_size": 12429,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "neattextinput",
-			"settings":
-			{
-				"buffer_size": 27,
-				"line_ending": "Windows",
-				"name": "http://subdomain.netsoc.co/"
 			}
 		},
 		{
@@ -176,6 +156,14 @@
 			"settings":
 			{
 				"buffer_size": 6215,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "styles/main.css",
+			"settings":
+			{
+				"buffer_size": 1297,
 				"line_ending": "Windows"
 			}
 		}
@@ -204,6 +192,8 @@
 	},
 	"file_history":
 	[
+		"/C/Users/User01/Desktop/HTML5/components/duartebot.html",
+		"/C/Users/User01/Desktop/HTML5/components/neattextinput",
 		"/C/Users/User01/Desktop/HTML5/components/scripts/hashmap.js",
 		"/C/Users/User01/Desktop/HTML5/components/styles/main.css",
 		"/C/Users/User01/Desktop/HTML5/components/blogmainpagestyles.html",
@@ -240,6 +230,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"font",
+			"indexFor",
 			"			// rect = li.getBoundingClientRect();\n			// ctx.rect(rect.left,rect.top,rect.right,rect.bottom);\n			// ctx.fillStyle=\"red\";\n			// ctx.fill();",
 			"hashUL",
 			"hashnames",
@@ -270,7 +262,7 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -306,15 +298,15 @@
 					"file": "jshashmap.html",
 					"settings":
 					{
-						"buffer_size": 1794,
+						"buffer_size": 1876,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1096,
-								1096
+								1448,
+								1448
 							]
 						],
 						"settings":
@@ -331,46 +323,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "duartebot.html",
-					"settings":
-					{
-						"buffer_size": 1714,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								534,
-								534
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "styles/hashmap.css",
 					"settings":
 					{
-						"buffer_size": 3402,
+						"buffer_size": 3525,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2670,
-								2672
+								3522,
+								3522
 							]
 						],
 						"settings":
@@ -378,25 +342,25 @@
 							"syntax": "Packages/CSS/CSS.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1644.0,
+						"translation.y": 2212.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "scripts/hashmap.js",
 					"settings":
 					{
-						"buffer_size": 12488,
+						"buffer_size": 12429,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9380,
-								9380
+								11130,
+								11130
 							]
 						],
 						"settings":
@@ -404,40 +368,13 @@
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 5045.0,
+						"translation.y": 4804.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "neattextinput",
-					"settings":
-					{
-						"buffer_size": 27,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								27,
-								27
-							]
-						],
-						"settings":
-						{
-							"auto_name": "http://subdomain.netsoc.co/",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
+					"buffer": 4,
 					"file": "styles/stresslessexpandingnav.css",
 					"settings":
 					{
@@ -463,7 +400,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 5,
 					"file": "stresslessexpandingnav.html",
 					"settings":
 					{
@@ -483,6 +420,32 @@
 							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "styles/main.css",
+					"settings":
+					{
+						"buffer_size": 1297,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								582,
+								582
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
